@@ -12,6 +12,6 @@ numInstances="$5"
 
 cf login -a "${cfAPI}" -u "${cfUserName}" -p "${cfPassword}" --skip-ssl-validation
 
-cf scale appname -i "${numInstances}"
+cf scale "${cfAppName} -i "${numInstances}"
 
 exit $?
