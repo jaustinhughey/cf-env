@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -e # Exit immediately if a simple command exits with exit code >0
+set -u # Report usage of any uninitialized variables.
+set -x # Show all evaluations before running the command
+
+cfAPI="$1"
+cfAppName="$2"
+cfUserName="$3"
+cfPassword="$4"
+numInstances="$5"
+
+cf login -a "${cfAPI}" -u "${cfUserName}" -p "${cfPassword}" --skip-ssl-validation
+
+cf scale appname -i "${numInstances}"
+
+exit $?
