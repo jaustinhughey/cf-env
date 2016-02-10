@@ -1,4 +1,4 @@
 applications:
-- name: cf-env-xiujiao
+- name: cf-env-xj
   memory: 128M
   disk: 128M
