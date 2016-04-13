@@ -2,21 +2,41 @@
 # Pipeline configuration for Concourse CI (http://concourse.ci)
 
 resources:
-# Configure your resources.
-# - name: resource-cf-app
-  - name: resouce-app-source-code-git
-  # Configure your cf app resource,
-  # Hints:
-  #   1) This one is of type `git` and should be fetched from
-  #      the cf-env repo you forked to your own github account.
-  #   2) For information on configuring a git resource refer to
-  #      `https://github.com/concourse/git-resource`
+
+
+
+
+
+# Application Source Code Resource
+# --------------------------------
+# Tells the pipeline where to get the app's source code.
+# Configuration definition found at
+#   https://github.com/concourse/git-resource
+- name: resource-fancyapp-source-git
   type: git
   source: 
     uri: https://github.com/jaustinhughey/cf-env
     branch: master
 
-- name: resource-run-cloudfoundry-deploy
+
+
+
+
+
+# Application Deployment Resource
+# -------------------------------
+# Tells the pipeline how to deploy the application to
+# Cloud Foundry. To tell it where your CF API end point
+# is located, run `cf api` within your shell to see where
+# your `cf` tool is sending its API queries. Then just
+# copy/pasta that value below. Other variables/values
+# can be seen here:
+#   https://github.com/concourse/cf-resource
+#
+# TODO: Make ./credentials.yml and put creds *there*, not
+#       in this file directly. Because who needs security,
+#       amirite?! :trollface:
+- name: resource-cf-deploy
   type: cf
   source:
     skip_cert_check: true
@@ -26,21 +46,27 @@ resources:
     username: admin
     password: admin
 
-  # Configure a resource for deploying your CF app
-  # Hints:
-  #   1) The type is cf;
-  #   2) You can refer to `https://github.com/concourse/cf-resource`;
-  #   3) Instead of directly showng username and password etc.,
-  #      instead use variables in `credentials.yml`;
-  #   4) Set `skip_cert_check` to be true for this example.
+
+
+
+
 
 
 jobs:
+
+# Application Deployment (Cloud Foundry)
+# --------------------------------------
+# Tells the pipeline what it needs to know in order to
+# automatically "push" a deployment of your application
+# to your Cloud Foundry "resource" (see above).
 - name: job-deploy-app
   public: true
   serial: true
   plan:
-  - get: resource-app-source-code-git
+  - get: resource-fancyapp-source-git
+  - task: build
+    file: resource-app-source-code-git/manifests/fancyapp.yml
+  - put: 
     # Configure the trigger to be true, so pushing your changes to your
     # repo will trigger the pipeline.
     # Hints:
