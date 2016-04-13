@@ -64,19 +64,9 @@ jobs:
   serial: true
   plan:
   - get: resource-fancyapp-source-git
-  - task: build
-    file: resource-app-source-code-git/manifests/fancyapp.yml
-  - put: 
-    # Configure the trigger to be true, so pushing your changes to your
-    # repo will trigger the pipeline.
-    # Hints:
-    #   1) You will find useful info here:
-    #      `https://github.com/concourse/cf-resource`
+    trigger: true
 
-  - put: resource-run-cloudfoundry-deploy
+  - put: resource-cf-deploy
     params:
-      # Configure the parameters you need to deploy the app to cf
-      # Hints:
-      #   1) You will find useful info here:
-      #      `https://github.com/concourse/cf-resource`
-
+      manifest: resource-fancyapp-source-git/manifests/fancyapp.yml
+      path: resource-fancyapp-source-git
