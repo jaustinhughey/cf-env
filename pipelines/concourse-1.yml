@@ -54,6 +54,35 @@ resources:
 
 jobs:
 
+# Scale the Application itself (via Cloud Foundry)
+# ------------------------------------------------
+# The below task tells Concourse how to initiate
+# some type of scale via CF.
+- name: job-scale-app
+  public: true
+  serial: true
+  plan:
+  - get: resource-fancyapp-source-git
+    trigger: true
+    passed: [job-deploy-app]
+  - task: scale-cf-app
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: starkandwayne/concourse
+      inputs:
+      - {name: resource-fancyapp-source-git, path: .}
+      run:
+        path: ./bin/scale-app
+        args:
+        - https://api.bosh-lite.com
+        - fancyapp
+        - admin
+        - admin
+        - 4
+
 # Application Deployment (Cloud Foundry)
 # --------------------------------------
 # Tells the pipeline what it needs to know in order to
